@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { CurrencyService } from 'src/app/currency.service';
 
 @Component({
@@ -6,44 +7,67 @@ import { CurrencyService } from 'src/app/currency.service';
   templateUrl: './converter.component.html',
   styleUrls: ['./converter.component.scss']
 })
-export class ConverterComponent implements OnInit {
+export class ConverterComponent implements OnInit, OnDestroy {
 
   
   constructor( private currency: CurrencyService ) {}
 
-  currencies: string[] = ['USD', 'EUR', 'UAH', 'JPY', 'GBP', 'CAD', 'SEK', 'NOK', 'PLN']
-  selectedCurrencyLeft: string = 'USD'
-  selectedCurrencyRight: string = 'UAH'
-  valueLeft: number = 1
-  valueRight: number = 1
+  private ngUnsubscribe = new Subject<void>();
+
+  public currencies: string[] = ['USD', 'EUR', 'UAH', 'JPY', 'GBP', 'CAD', 'SEK', 'NOK', 'PLN']
+  public selectedCurrencyLeft: string = 'USD'
+  public selectedCurrencyRight: string = 'UAH'
+  public valueLeft: number = 1
+  public valueRight: number = 1
 
   
 
-  ngOnInit(): void {
-    this.convertCurrencyLeft(1)
+  public ngOnInit(): void {
+    this.convertCurrencyLeft(1);
   }
 
-  convertCurrencyLeft(n: number) {
-    this.currency.getRates(this.selectedCurrencyRight, this.selectedCurrencyLeft).subscribe(rate => {
-      let currRate = JSON.parse(JSON.stringify(rate))
-      this.valueRight = Number(Number(n * currRate['result']).toFixed(2))
-    })
+  public ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
-  convertCurrencyRight(n: number) {
-    this.currency.getRates(this.selectedCurrencyLeft, this.selectedCurrencyRight).subscribe(rate => {
-      let currRate = JSON.parse(JSON.stringify(rate))
-      this.valueLeft = Number(Number(n * currRate['result']).toFixed(2))
-    })
+  public convertCurrencyLeft(n: number): void {
+    this.valueLeft = n
+    this.currency.getRates(this.selectedCurrencyLeft, this.selectedCurrencyRight)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        rate => {
+          this.valueRight = Number((n * Number(rate.result)).toFixed(2));
+        }, 
+        err => {
+          console.log('HTTP Error', err);
+        }
+      )
   }
 
-  swap() {
-    let tempCurrency = this.selectedCurrencyLeft
-    let tempValue = this.valueLeft
-    this.selectedCurrencyLeft = this.selectedCurrencyRight
-    this.valueLeft = this.valueRight
-    this.selectedCurrencyRight = tempCurrency
-    this.valueRight = tempValue
+  public convertCurrencyRight(n: number): void {
+    this.valueRight = n
+    this.currency.getRates(this.selectedCurrencyRight, this.selectedCurrencyLeft)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        rate => {
+          this.valueLeft = Number((n * Number(rate.result)).toFixed(2));
+        }, 
+        err => {
+          console.log('HTTP Error', err);
+        }
+      )
+  }
+
+  public swap(): void {
+    let tempCurrency = this.selectedCurrencyLeft;
+    let tempValue = this.valueLeft;
+
+    this.selectedCurrencyLeft = this.selectedCurrencyRight;
+    this.valueLeft = this.valueRight;
+
+    this.selectedCurrencyRight = tempCurrency;
+    this.valueRight = tempValue;
   }
   
 

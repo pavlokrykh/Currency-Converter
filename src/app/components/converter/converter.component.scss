@@ -1,8 +1,10 @@
 
 .wrap {
-    height: 600px;
-    border: 1px solid black;
-    border-radius: 10px;
+    border-radius: 20px;
+    padding: 25px;
+    background: #ffffff;
+    box-shadow:  25px 25px 100px #b5b5b5,
+                 -25px -25px 100px #ffffff;
 }
 
 .amount {
@@ -17,7 +19,13 @@
     text-align: right;
 }
 
-.icon {
-    margin-left: 10px;
-    margin-right: 10px;
+
+.converter {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.available {
+    display: flex;
+    margin-bottom: 50px;
 }

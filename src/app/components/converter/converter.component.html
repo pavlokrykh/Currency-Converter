@@ -1,14 +1,13 @@
 <div class="wrap">
 
-    <div class="mat-headline-2">I want to convert</div>
+    <span class="mat-headline-3">Converting {{ selectedCurrencyLeft }} to {{ selectedCurrencyRight }}</span>
     
-    <div>
+    <div class="converter">
 
         <mat-form-field appearance="fill" floatLabel="always" class="amount">
 
             <mat-label>Amount</mat-label>
             <input matInput type="number" min="0" class="right-align" [ngModel]='valueLeft' (ngModelChange)="convertCurrencyLeft($event)">
-            <span matTextPrefix>$&nbsp;</span>
 
         </mat-form-field>
 
@@ -32,7 +31,6 @@
 
             <mat-label>Amount</mat-label>
             <input matInput type="number" min="0" class="right-align" [ngModel]='valueRight' (ngModelChange)="convertCurrencyRight($event)">
-            <span matTextPrefix>$&nbsp;</span>
 
         </mat-form-field>
 
@@ -47,5 +45,7 @@
         </mat-form-field>
 
     </div>
+
+    <span class="mat-body available">Available currencies: <div *ngFor="let c of currencies; let i = index"> &nbsp; {{c}}<span *ngIf="i != currencies.length-1">,</span> </div></span>
 
 </div>

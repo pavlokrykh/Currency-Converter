@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { CurrencyService } from 'src/app/currency.service';
 
 @Component({
@@ -6,28 +7,47 @@ import { CurrencyService } from 'src/app/currency.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
 
-  usdRate: string | undefined
-  eurRate: string | undefined
+  public usdRate?: string;
+  public eurRate?: string;
+
+  private ngUnsubscribe = new Subject<void>();
+
 
 
   constructor( private currency: CurrencyService ) {}
 
-  ngOnInit(): void {
-    this.currency.getRates('UAH', 'USD').subscribe(rate => {
-      let currRate = JSON.parse(JSON.stringify(rate))
-      this.usdRate = Number(currRate['result']).toFixed(2)
-    })
+  public ngOnInit(): void {
 
-    this.currency.getRates('UAH', 'EUR').subscribe(rate => {
-      let currRate = JSON.parse(JSON.stringify(rate))
-      this.eurRate = Number(currRate['result']).toFixed(2)
-    })
-  }
-
-  getBaseRates() {
+    this.currency.getRates('USD', 'UAH')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        rate => {
+          this.usdRate = Number(rate.result).toFixed(2);
+        },
+        err => {
+          console.log('HTTP Error', err)
+        }
+      )
     
+
+    this.currency.getRates('EUR', 'UAH')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        rate => {
+          this.eurRate = Number(rate.result).toFixed(2);
+        }, 
+        err => {
+          console.log('HTTP Error', err)
+        }
+      )
+
   }
 
+  public ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+  
 }
