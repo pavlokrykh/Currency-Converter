@@ -1,0 +1,51 @@
+<div class="wrap">
+
+    <div class="mat-headline-2">I want to convert</div>
+    
+    <div>
+
+        <mat-form-field appearance="fill" floatLabel="always" class="amount">
+
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" min="0" class="right-align" [ngModel]='valueLeft' (ngModelChange)="convertCurrencyLeft($event)">
+            <span matTextPrefix>$&nbsp;</span>
+
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="currency">
+            
+            <mat-label>Currency</mat-label>
+            
+            <mat-select [(ngModel)]="selectedCurrencyLeft" (ngModelChange)="convertCurrencyLeft(valueLeft)">
+                <mat-option *ngFor="let c of currencies" [value]="c">{{c}}</mat-option>
+            </mat-select>
+
+        </mat-form-field>
+
+
+        <button mat-icon-button (click)="swap()">
+            <mat-icon>swap_horiz</mat-icon>
+        </button>
+
+
+        <mat-form-field appearance="fill" floatLabel="always" class="amount">
+
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" min="0" class="right-align" [ngModel]='valueRight' (ngModelChange)="convertCurrencyRight($event)">
+            <span matTextPrefix>$&nbsp;</span>
+
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="currency">
+            
+            <mat-label>Currency</mat-label>
+            
+            <mat-select [(ngModel)]="selectedCurrencyRight" (ngModelChange)="convertCurrencyLeft(valueLeft)">
+                <mat-option *ngFor="let c of currencies" [value]="c">{{c}}</mat-option>
+            </mat-select>
+
+        </mat-form-field>
+
+    </div>
+
+</div>
