@@ -26,11 +26,6 @@ export class ConverterComponent implements OnInit, OnDestroy {
     this.convertCurrencyLeft(1);
   }
 
-  public ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
-
   public convertCurrencyLeft(n: number): void {
     this.valueLeft = n
     this.currency.getRates(this.selectedCurrencyLeft, this.selectedCurrencyRight)
@@ -61,14 +56,19 @@ export class ConverterComponent implements OnInit, OnDestroy {
 
   public swap(): void {
     let tempCurrency = this.selectedCurrencyLeft;
-    let tempValue = this.valueLeft;
 
     this.selectedCurrencyLeft = this.selectedCurrencyRight;
-    this.valueLeft = this.valueRight;
 
     this.selectedCurrencyRight = tempCurrency;
-    this.valueRight = tempValue;
+
+    this.convertCurrencyLeft(this.valueLeft)
   }
   
+  
+  public ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 
 }
